@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="BiteBack — a student prototype that estimates whether there is enough time to buy food and still reach the next lesson on time.">
+<meta name="robots" content="noindex">
+<title>BiteBack — will I make it back in time?</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- ===================== SCREEN 1 — INPUT ===================== -->
+  <section id="screen-input" class="screen is-active" aria-labelledby="app-title">
+    <header class="app-head">
+      <div class="logo" aria-hidden="true">BB</div>
+      <div>
+        <h1 id="app-title">BiteBack</h1>
+        <p class="subtitle">Short break. One question: can I eat and still be on time?</p>
+      </div>
+    </header>
+
+    <p class="banner banner-info">
+      <span class="banner-icon" aria-hidden="true">i</span>
+      <span><strong>Prototype.</strong> All queue and walking times are demo estimates, not live measurements. Nothing you type is saved or sent anywhere.</span>
+    </p>
+
+    <form id="trip-form" novalidate>
+      <fieldset class="card">
+        <legend>Your journey</legend>
+
+        <div class="field">
+          <label for="start-block">Starting from</label>
+          <input id="start-block" name="start-block" type="text" value="Block 7" readonly aria-describedby="locked-note">
+        </div>
+
+        <div class="field">
+          <label for="food-court">Food court</label>
+          <input id="food-court" name="food-court" type="text" value="Food Club" readonly>
+        </div>
+
+        <div class="field">
+          <label for="lesson-block">Next lesson at</label>
+          <input id="lesson-block" name="lesson-block" type="text" value="Block 37" readonly>
+        </div>
+
+        <p id="locked-note" class="hint">
+          <span aria-hidden="true">&#128274;</span> Fixed for this proof-of-concept. BiteBack currently models one route only: Block&nbsp;7 &rarr; Food Club &rarr; Block&nbsp;37.
+        </p>
+
+        <div class="field">
+          <label for="lesson-time">Next lesson starts at <span class="req">(required)</span></label>
+          <input id="lesson-time" name="lesson-time" type="time" required aria-describedby="lesson-time-error">
+          <p id="lesson-time-error" class="error-text" role="alert" hidden></p>
+        </div>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>Clock</legend>
+
+        <div class="radio-row">
+          <label class="radio">
+            <input type="radio" name="time-mode" value="device">
+            <span><strong>Device time</strong><small>Uses the real time on this phone</small></span>
+          </label>
+          <label class="radio">
+            <input type="radio" name="time-mode" value="demo" checked>
+            <span><strong>Demo mode</strong><small>Uses a fixed time so the demo is predictable</small></span>
+          </label>
+        </div>
+
+        <div class="field" id="demo-time-field">
+          <label for="demo-current-time">Demo &ldquo;current time&rdquo;</label>
+          <input id="demo-current-time" type="time" value="13:00">
+        </div>
+
+        <p class="now-readout">Current time in use: <strong id="now-readout">--:--</strong></p>
+      </fieldset>
+
+      <details class="card demo-tools">
+        <summary>Demo controls (for testing edge states)</summary>
+        <label class="check">
+          <input type="checkbox" id="simulate-missing">
+          <span>Simulate missing Chicken Rice queue data &rarr; forces <strong>Unknown</strong></span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="simulate-stale">
+          <span>Simulate a stale (26&nbsp;min old) Chicken Rice snapshot &rarr; forces <strong>Unknown</strong></span>
+        </label>
+        <p class="hint">These switches exist only to show the honest-failure states during the viva. A real build would not ship them.</p>
+      </details>
+
+      <button type="submit" class="btn btn-primary">Continue to Food Club</button>
+    </form>
+
+    <p class="privacy-note">
+      <span aria-hidden="true">&#128737;</span>
+      No name, no student ID, no login, no location, no timetable upload. Nothing is stored on this device or on any server.
+    </p>
+  </section>
+
+  <!-- ===================== SCREEN 2 — QUEUES ===================== -->
+  <section id="screen-queue" class="screen" aria-labelledby="queue-title" hidden>
+    <header class="screen-head">
+      <button type="button" class="btn-back" data-goto="screen-input">&larr; Edit journey</button>
+      <h2 id="queue-title">Food Club queues</h2>
+      <p class="screen-sub" id="queue-context">Arriving about --:-- &middot; lesson at --:--</p>
+    </header>
+
+    <p class="banner banner-warn">
+      <span class="banner-icon" aria-hidden="true">!</span>
+      <span><strong>Simulated CV queue snapshots.</strong> No camera is connected. These counts are hand-written demo values standing in for a future computer-vision people counter.</span>
+    </p>
+
+    <ul class="stall-list" id="stall-list"></ul>
+
+    <p class="hint centred">Only Chicken Rice has a full timing calculation in this proof-of-concept.</p>
+  </section>
+
+  <!-- ===================== SCREEN 3 — RESULT ===================== -->
+  <section id="screen-result" class="screen" aria-labelledby="result-title" hidden>
+    <header class="screen-head">
+      <button type="button" class="btn-back" data-goto="screen-queue">&larr; Back to queues</button>
+      <h2 id="result-title">Chicken Rice</h2>
+      <p class="screen-sub" id="result-context">Block 7 &rarr; Food Club &rarr; Block 37</p>
+    </header>
+
+    <div id="status-pill" class="status-pill" role="status" aria-live="polite">
+      <span class="status-icon" id="status-icon" aria-hidden="true">?</span>
+      <span class="status-text">
+        <strong id="status-label">Unknown</strong>
+        <small id="status-line">Waiting for input.</small>
+      </span>
+    </div>
+
+    <div class="card" id="eating-card">
+      <h3>Eating time</h3>
+      <div class="eat-grid">
+        <div class="eat-cell">
+          <span class="eat-num" id="eat-before">--</span>
+          <span class="eat-lab">min before buffer</span>
+        </div>
+        <div class="eat-cell">
+          <span class="eat-num" id="eat-after">--</span>
+          <span class="eat-lab">min after buffer</span>
+        </div>
+      </div>
+      <p class="hint" id="eat-rule">Target: at least 15 minutes of eating time after the safety buffer.</p>
+    </div>
+
+    <div class="card" id="breakdown-card">
+      <h3>Where the minutes go</h3>
+      <table class="breakdown">
+        <caption class="sr-only">Timing breakdown in minutes</caption>
+        <tbody>
+          <tr><th scope="row"><span aria-hidden="true">&#128694;</span> Block 7 &rarr; Food Club walk</th><td><span id="bd-walk1">--</span> min</td></tr>
+          <tr><th scope="row"><span aria-hidden="true">&#128101;</span> Chicken Rice queue</th><td><span id="bd-queue">--</span> min</td></tr>
+          <tr><th scope="row"><span aria-hidden="true">&#127858;</span> Preparation</th><td><span id="bd-prep">--</span> min</td></tr>
+          <tr><th scope="row"><span aria-hidden="true">&#128694;</span> Food Club &rarr; Block 37 walk</th><td><span id="bd-walk2">--</span> min</td></tr>
+          <tr class="row-sum"><th scope="row">Base non-eating time</th><td><span id="bd-base">--</span> min</td></tr>
+          <tr><th scope="row"><span aria-hidden="true">&#128737;</span> Safety buffer</th><td><span id="bd-buffer">--</span> min</td></tr>
+          <tr class="row-sum"><th scope="row">Time available before lesson</th><td><span id="bd-available">--</span> min</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" id="explain-card">
+      <h3>Why this result</h3>
+      <p id="explain-text">--</p>
+    </div>
+
+    <p class="banner banner-warn">
+      <span class="banner-icon" aria-hidden="true">!</span>
+      <span><strong>These are demo estimates, not guarantees.</strong> Walking, queue and preparation times are placeholder numbers. They must be replaced with real stopwatch observations at Food Club before anyone relies on this. See <code>DATA_NOTES.md</code>.</span>
+    </p>
+
+    <button type="button" class="btn btn-secondary" data-goto="screen-queue">&larr; Back to queues</button>
+  </section>
+
+</div>
+
+<script src="data.js"></script>
+<script src="feasibility.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
