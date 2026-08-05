@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BiteBack — presentation view</title>
+<style>
+/* =============================================================================
+   demo.html — PRESENTATION WRAPPER ONLY
+   -----------------------------------------------------------------------------
+   This file contains NO app logic, NO data and NO decision rules. It is a
+   picture frame. The real prototype runs inside the iframe below, loaded
+   straight from index.html.
+
+   That means index.html, styles.css, data.js, feasibility.js and app.js are
+   completely untouched. Anything you change in the app shows up here
+   automatically, and deleting this file breaks nothing.
+
+   Open this, press F11 for fullscreen, and present.
+   ============================================================================= */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #e9edf1;
+  background-image: radial-gradient(circle at 50% 38%, #ffffff 0%, #e9edf1 55%, #dfe5eb 100%);
+  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+}
+
+/* The scaler keeps the phone at true 390x844 and shrinks it to fit whatever
+   screen or projector it lands on, so nothing inside ever reflows.
+
+   It is pinned to the exact centre of the viewport with position:fixed rather
+   than centred by grid/flex. A CSS transform does not change an element's
+   layout size, so a layout-based centre would centre the unscaled 872px box
+   and leave the visible phone sitting off-centre. This cannot drift. */
+.scaler {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform .15s ease-out;
+}
+
+/* ------------------------------- The phone -------------------------------- */
+.phone-frame {
+  position: relative;
+  width: 418px;
+  height: 872px;
+  padding: 14px;
+  border-radius: 58px;
+  background: linear-gradient(160deg, #3a4048 0%, #202429 40%, #14171a 100%);
+  box-shadow:
+    0 2px 4px rgba(16, 22, 28, .30),
+    0 26px 60px rgba(16, 22, 28, .30),
+    inset 0 0 0 2px rgba(255, 255, 255, .10);
+}
+
+/* Side buttons */
+.btn-side {
+  position: absolute;
+  width: 3px;
+  background: #2b3037;
+  border-radius: 2px;
+}
+.btn-side.left-1  { left: -3px; top: 168px; height: 34px; }
+.btn-side.left-2  { left: -3px; top: 216px; height: 62px; }
+.btn-side.left-3  { left: -3px; top: 290px; height: 62px; }
+.btn-side.right-1 { right: -3px; top: 240px; height: 96px; }
+
+/* ------------------------------- The screen ------------------------------- */
+.screen-area {
+  position: relative;
+  width: 390px;
+  height: 844px;
+  border-radius: 46px;
+  overflow: hidden;
+  background: #f2f5f8;
+  display: flex;
+  flex-direction: column;
+}
+
+/* iOS-style status bar. A real strip, not an overlay, so it never covers
+   any part of the prototype. */
+.status-bar {
+  flex: 0 0 auto;
+  height: 46px;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f2f5f8;
+  color: #16202b;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .1px;
+  position: relative;
+  z-index: 2;
+}
+.status-right { display: flex; align-items: center; gap: 6px; }
+
+/* Signal bars */
+.signal { display: flex; align-items: flex-end; gap: 2px; height: 11px; }
+.signal i { display: block; width: 3px; background: #16202b; border-radius: 1px; }
+.signal i:nth-child(1) { height: 4px; }
+.signal i:nth-child(2) { height: 6px; }
+.signal i:nth-child(3) { height: 9px; }
+.signal i:nth-child(4) { height: 11px; }
+
+/* Wi-Fi arcs */
+.wifi { width: 15px; height: 11px; position: relative; }
+.wifi span {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 2px solid #16202b;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-radius: 50%;
+}
+.wifi span:nth-child(1) { width: 15px; height: 15px; top: 0; }
+.wifi span:nth-child(2) { width: 9px;  height: 9px;  top: 3px; }
+.wifi .dot {
+  border: 0;
+  width: 3px; height: 3px;
+  background: #16202b;
+  border-radius: 50%;
+  top: 8px;
+}
+
+/* Battery */
+.battery {
+  width: 24px; height: 12px;
+  border: 1.5px solid #16202b;
+  border-radius: 3.5px;
+  padding: 1.5px;
+  position: relative;
+}
+.battery::after {
+  content: "";
+  position: absolute;
+  right: -3.5px; top: 3.5px;
+  width: 2px; height: 4px;
+  background: #16202b;
+  border-radius: 0 1px 1px 0;
+}
+.battery i { display: block; height: 100%; width: 72%; background: #16202b; border-radius: 1.5px; }
+
+/* --------------------------------- Notch ---------------------------------- */
+.notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 158px;
+  height: 30px;
+  background: #14171a;
+  border-radius: 0 0 19px 19px;
+  z-index: 3;
+}
+/* The small curved shoulders where the notch meets the screen edge */
+.notch::before,
+.notch::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 9px;
+  height: 9px;
+  background: #14171a;
+}
+.notch::before { left: -9px;  border-radius: 0 9px 0 0; box-shadow: 3px -3px 0 0 #f2f5f8; }
+.notch::after  { right: -9px; border-radius: 9px 0 0 0; box-shadow: -3px -3px 0 0 #f2f5f8; }
+
+/* Speaker slot and camera inside the notch */
+.notch .speaker {
+  position: absolute;
+  top: 11px; left: 50%;
+  transform: translateX(-58%);
+  width: 42px; height: 5px;
+  background: #24282d;
+  border-radius: 3px;
+}
+.notch .camera {
+  position: absolute;
+  top: 10px; right: 26px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #1d2a34;
+  box-shadow: inset 0 0 0 1px #2c3d4a;
+}
+
+/* -------------------------------- The app --------------------------------- */
+.app-frame {
+  flex: 1 1 auto;
+  width: 100%;
+  border: 0;
+  display: block;
+  background: #f2f5f8;
+  position: relative;
+  z-index: 1;
+}
+
+/* Sits behind the iframe. Only ever visible if the iframe fails to load. */
+.frame-fallback {
+  position: absolute;
+  left: 0; right: 0;
+  top: 46px; bottom: 0;
+  z-index: 0;
+  padding: 40px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  color: #5a6c7d;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.frame-fallback strong { color: #16202b; font-size: 15px; }
+.frame-fallback code {
+  display: block;
+  background: #e4e9ee;
+  color: #16202b;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+/* Home indicator. Overlaid, but the app has 48px of bottom padding so it
+   never sits on top of anything readable. */
+.home-bar {
+  position: absolute;
+  bottom: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 138px;
+  height: 5px;
+  border-radius: 3px;
+  background: #16202b;
+  opacity: .32;
+  pointer-events: none;
+  z-index: 4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scaler { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="scaler" id="scaler">
+    <div class="phone-frame">
+
+      <span class="btn-side left-1"></span>
+      <span class="btn-side left-2"></span>
+      <span class="btn-side left-3"></span>
+      <span class="btn-side right-1"></span>
+
+      <div class="screen-area">
+
+        <div class="notch" aria-hidden="true">
+          <span class="speaker"></span>
+          <span class="camera"></span>
+        </div>
+
+        <!-- Static status bar. 1:00 PM deliberately matches the app's demo clock. -->
+        <div class="status-bar" aria-hidden="true">
+          <span>1:00</span>
+          <span class="status-right">
+            <span class="signal"><i></i><i></i><i></i><i></i></span>
+            <span class="wifi"><span></span><span></span><span class="dot"></span></span>
+            <span class="battery"><i></i></span>
+          </span>
+        </div>
+
+        <div class="frame-fallback">
+          <strong>The prototype could not load in this frame.</strong>
+          <span>Some browsers block one local file from embedding another. Run a local server from the <code>biteback</code> folder and open the demo through it:</span>
+          <code>python -m http.server 8000</code>
+          <code>http://localhost:8000/demo.html</code>
+          <span>Or just open <code>index.html</code> directly — the prototype itself always works.</span>
+        </div>
+
+        <iframe
+          class="app-frame"
+          id="app-frame"
+          src="index.html"
+          title="BiteBack prototype"></iframe>
+
+        <span class="home-bar" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Scale the phone to fit the window without ever reflowing what is inside it.
+   The phone stays exactly 390x844 CSS pixels; only the picture is resized. */
+(function () {
+  "use strict";
+  var PHONE_W = 418, PHONE_H = 872, MARGIN = 24;
+  var scaler = document.getElementById("scaler");
+
+  function fit() {
+    var scale = Math.min(
+      (window.innerHeight - MARGIN) / PHONE_H,
+      (window.innerWidth - MARGIN) / PHONE_W,
+      1 /* never enlarge past true size — upscaling is what pushed it off-screen */
+    );
+    scaler.style.transform =
+      "translate(-50%, -50%) scale(" + Math.max(scale, 0.2).toFixed(4) + ")";
+  }
+
+  fit();
+  window.addEventListener("resize", fit);
+  /* Re-measure once more after the iframe and fonts settle. */
+  window.addEventListener("load", fit);
+})();
+</script>
+
+</body>
+</html>
