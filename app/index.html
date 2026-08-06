@@ -22,14 +22,14 @@
       </div>
     </header>
 
-    <p class="banner banner-info">
-      <span class="banner-icon" aria-hidden="true">i</span>
-      <span><strong>Prototype.</strong> All queue and walking times are demo estimates, not live measurements. Nothing you type is saved or sent anywhere.</span>
-    </p>
+    <!-- <p class="banner banner-info"> -->
+    <!--   <span class="banner-icon" aria-hidden="true">i</span> -->
+    <!--   <span><strong>Prototype.</strong> All queue and walking times are demo estimates, not live measurements. Nothing you type is saved or sent anywhere.</span> -->
+    <!-- </p> -->
 
     <form id="trip-form" novalidate>
       <fieldset class="card">
-        <legend>Your journey</legend>
+        <div class="header">Your journey</div>
 
         <div class="field">
           <label for="start-block">Starting from</label>
@@ -46,9 +46,9 @@
           <input id="lesson-block" name="lesson-block" type="text" value="Block 37" readonly>
         </div>
 
-        <p id="locked-note" class="hint">
-          <span aria-hidden="true">&#128274;</span> Fixed for this proof-of-concept. BiteBack currently models one route only: Block&nbsp;7 &rarr; Food Club &rarr; Block&nbsp;37.
-        </p>
+        <!-- <p id="locked-note" class="hint"> -->
+        <!--   <span aria-hidden="true">&#128274;</span> Fixed for this proof-of-concept. BiteBack currently models one route only: Block&nbsp;7 &rarr; Food Club &rarr; Block&nbsp;37. -->
+        <!-- </p> -->
 
         <div class="field">
           <label for="lesson-time">Next lesson starts at <span class="req">(required)</span></label>
@@ -58,23 +58,23 @@
       </fieldset>
 
       <fieldset class="card">
-        <legend>Clock</legend>
+        <div class="header">Clock</div>
 
         <div class="radio-row">
           <label class="radio">
-            <input type="radio" name="time-mode" value="device">
+            <input type="radio" name="time-mode" value="device" checked>
             <span><strong>Device time</strong><small>Uses the real time on this phone</small></span>
           </label>
-          <label class="radio">
-            <input type="radio" name="time-mode" value="demo" checked>
-            <span><strong>Demo mode</strong><small>Uses a fixed time so the demo is predictable</small></span>
-          </label>
+          <!-- <label class="radio"> -->
+          <!--   <input type="radio" name="time-mode" value="demo" checked> -->
+          <!--   <span><strong>Demo mode</strong><small>Uses a fixed time so the demo is predictable</small></span> -->
+          <!-- </label> -->
         </div>
 
-        <div class="field" id="demo-time-field">
-          <label for="demo-current-time">Demo &ldquo;current time&rdquo;</label>
-          <input id="demo-current-time" type="time" value="13:00">
-        </div>
+        <!-- <div class="field" id="demo-time-field"> -->
+        <!--   <label for="demo-current-time">Demo &ldquo;current time&rdquo;</label> -->
+        <!--   <input id="demo-current-time" type="time" value="13:00"> -->
+        <!-- </div> -->
 
         <p class="now-readout">Current time in use: <strong id="now-readout">--:--</strong></p>
       </fieldset>
@@ -95,10 +95,10 @@
       <button type="submit" class="btn btn-primary">Continue to Food Club</button>
     </form>
 
-    <p class="privacy-note">
-      <span aria-hidden="true">&#128737;</span>
-      No name, no student ID, no login, no location, no timetable upload. Nothing is stored on this device or on any server.
-    </p>
+    <!-- <p class="privacy-note"> -->
+    <!--   <span aria-hidden="true">&#128737;</span> -->
+    <!--   No name, no student ID, no login, no location, no timetable upload. Nothing is stored on this device or on any server. -->
+    <!-- </p> -->
   </section>
 
   <!-- ===================== SCREEN 2 — QUEUES ===================== -->
@@ -109,14 +109,14 @@
       <p class="screen-sub" id="queue-context">Arriving about --:-- &middot; lesson at --:--</p>
     </header>
 
-    <p class="banner banner-warn">
-      <span class="banner-icon" aria-hidden="true">!</span>
-      <span><strong>Simulated CV queue snapshots.</strong> No camera is connected. These counts are hand-written demo values standing in for a future computer-vision people counter.</span>
-    </p>
+    <!-- <p class="banner banner-warn"> -->
+    <!--   <span class="banner-icon" aria-hidden="true">!</span> -->
+    <!--   <span><strong>Simulated CV queue snapshots.</strong> No camera is connected. These counts are hand-written demo values standing in for a future computer-vision people counter.</span> -->
+    <!-- </p> -->
 
     <ul class="stall-list" id="stall-list"></ul>
 
-    <p class="hint centred">Only Chicken Rice has a full timing calculation in this proof-of-concept.</p>
+    <!-- <p class="hint centred">Only Chicken Rice has a full timing calculation in this proof-of-concept.</p> -->
   </section>
 
   <!-- ===================== SCREEN 3 — RESULT ===================== -->
@@ -166,15 +166,15 @@
       </table>
     </div>
 
-    <div class="card" id="explain-card">
-      <h3>Why this result</h3>
-      <p id="explain-text">--</p>
-    </div>
+    <!-- <div class="card" id="explain-card"> -->
+    <!--   <h3>Why this result</h3> -->
+    <!--   <p id="explain-text">--</p> -->
+    <!-- </div> -->
 
-    <p class="banner banner-warn">
-      <span class="banner-icon" aria-hidden="true">!</span>
-      <span><strong>These are demo estimates, not guarantees.</strong> Walking, queue and preparation times are placeholder numbers. They must be replaced with real stopwatch observations at Food Club before anyone relies on this. See <code>DATA_NOTES.md</code>.</span>
-    </p>
+    <!-- <p class="banner banner-warn"> -->
+    <!--   <span class="banner-icon" aria-hidden="true">!</span> -->
+    <!--   <span><strong>These are demo estimates, not guarantees.</strong> Walking, queue and preparation times are placeholder numbers. They must be replaced with real stopwatch observations at Food Club before anyone relies on this. See <code>DATA_NOTES.md</code>.</span> -->
+    <!-- </p> -->
 
     <button type="button" class="btn btn-secondary" data-goto="screen-queue">&larr; Back to queues</button>
   </section>

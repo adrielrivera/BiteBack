@@ -145,8 +145,8 @@ h1 {
 .card h3 { margin: 0 0 10px; font-size: .95rem; }
 
 fieldset.card { min-width: 0; }
-legend {
-  padding: 0 6px;
+.header {
+  margin: 0 0 6px 0;
   font-size: .72rem;
   font-weight: 700;
   letter-spacing: .09em;

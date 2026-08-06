@@ -27,8 +27,9 @@
      Clock helpers
      ---------------------------------------------------------------------- */
   function getTimeMode() {
-    const checked = document.querySelector('input[name="time-mode"]:checked');
-    return checked ? checked.value : "demo";
+    // const checked = document.querySelector('input[name="time-mode"]:checked');
+    // return checked ? checked.value : "demo";
+    return "device";
   }
 
   function getNowMinutes() {
@@ -91,7 +92,7 @@
     const nowMinutes = getNowMinutes();
     const mode = getTimeMode() === "demo" ? "demo clock" : "device clock";
     $("now-readout").textContent = `${minutesToDisplayTime(nowMinutes)} (${mode})`;
-    $("demo-time-field").hidden = getTimeMode() !== "demo";
+    // $("demo-time-field").hidden = getTimeMode() !== "demo";
   }
 
   function showLessonTimeError(message) {
@@ -341,7 +342,7 @@
     setText("bd-buffer", hasNumbers ? result.breakdown.safetyBufferMinutes : "--");
     setText("bd-available", hasNumbers ? result.availableMinutes : "--");
 
-    $("explain-text").textContent = explain(result);
+    // $("explain-text").textContent = explain(result);
   }
 
   /* -------------------------------------------------------------------------
@@ -349,7 +350,7 @@
      ---------------------------------------------------------------------- */
   function init() {
     $("lesson-time").value = DEMO_DEFAULTS.demoLessonTime;
-    $("demo-current-time").value = DEMO_DEFAULTS.demoCurrentTime;
+    // $("demo-current-time").value = DEMO_DEFAULTS.demoCurrentTime;
 
     $("trip-form").addEventListener("submit", handleSubmit);
     $("lesson-time").addEventListener("input", () => showLessonTimeError(null));
@@ -357,7 +358,7 @@
     document.querySelectorAll('input[name="time-mode"]').forEach((radio) => {
       radio.addEventListener("change", refreshNowReadout);
     });
-    $("demo-current-time").addEventListener("input", refreshNowReadout);
+    // $("demo-current-time").addEventListener("input", refreshNowReadout);
 
     document.querySelectorAll("[data-goto]").forEach((btn) => {
       btn.addEventListener("click", () => {
