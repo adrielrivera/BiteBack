@@ -37,9 +37,10 @@ def count(testing=0):
         classidx = int(detections[j].cls.item())
 
         conf = detections[j].conf.item()
-        confs.append(conf)
+        if conf > 0.5:
+            confs.append(conf)
 
-        objects.append(classidx)
+            objects.append(classidx)
 
     print(confs)
     print(objects)
