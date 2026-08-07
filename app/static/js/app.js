@@ -1,13 +1,15 @@
 /* =============================================================================
    BiteBack — app.js
    -----------------------------------------------------------------------------
-   Screen wiring only. All decision logic lives in feasibility.js and all
+   Screen wiring and server requests (for computer vision) only. All decision logic lives in feasibility.js and all
    numbers live in data.js, so this file can be skimmed quickly during a viva.
 
    Deliberately NOT here: localStorage, sessionStorage, cookies, fetch/XHR,
    analytics, service workers. Everything is held in memory for the session and
    disappears when the tab closes.
    ============================================================================= */
+
+let resultRefreshInterval = null;
 
 (function () {
   "use strict";
@@ -388,7 +390,12 @@
     }
     
     updateQueueTime();
-    setInterval(updateQueueTime, 1000);
+
+    if (resultRefreshInterval !== null) {
+      clearInterval(resultRefreshInterval);
+    }
+
+    resultRefreshInterval = setInterval(updateQueueTime, 1000);
 
 
     // $("explain-text").textContent = explain(result);
@@ -412,6 +419,11 @@
     document.querySelectorAll("[data-goto]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const target = btn.getAttribute("data-goto");
+
+	if (target !== "screen-result" && resultRefreshInterval !== null) {
+	  clearInterval(resultRefreshInterval);
+	  resultRefreshInterval = null;
+	}
         if (target === "screen-queue") renderQueueScreen();
         showScreen(target);
       });
