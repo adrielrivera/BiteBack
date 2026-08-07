@@ -6,7 +6,7 @@
 <meta name="description" content="BiteBack — a student prototype that estimates whether there is enough time to buy food and still reach the next lesson on time.">
 <meta name="robots" content="noindex">
 <title>BiteBack — will I make it back in time?</title>
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
 
@@ -181,8 +181,8 @@
 
 </div>
 
-<script src="data.js"></script>
-<script src="feasibility.js"></script>
-<script src="app.js"></script>
+<script src="{{ url_for('static', filename='js/data.js') }}"></script>
+<script src="{{ url_for('static', filename='js/feasibility.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

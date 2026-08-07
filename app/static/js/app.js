@@ -187,10 +187,37 @@
 
       const stats = document.createElement("p");
       stats.className = "stall-stats";
-      const waitText = stall.queueMinutes === null ? "not available" : `${stall.queueMinutes} min`;
-      stats.innerHTML =
-        `Simulated queue: <strong>${stall.queueCount} people</strong> · ` +
-        `Est. wait: <strong>${waitText}</strong>`;
+
+      if (
+        base.id === "chicken-rice" &&
+	stall.queueMinutes !== null &&
+	stall.snapshotAgeMinutes <= 25
+      ) {
+	const updateCount = async () => {
+	  try {
+	    const res = await fetch("/api/count");
+	    const data = await res.json();
+	    const count = data.count;
+	    const queueMinutes = Math.ceil(count * 0.75);
+
+	    stats.innerHTML =
+	      `Simulated queue: <strong>${count} people</strong> · ` +
+	      `Est. wait: <strong>${queueMinutes} min</strong>`;
+	  } catch (err) {
+	    console.error(err);
+	  }
+	};
+
+	updateCount();
+	setInterval(updateCount, 1000);
+      } else {
+	const waitText = stall.queueMinutes === null ? "not available" : `${stall.queueMinutes} min`;
+	const queueText = stall.queueMinutes === null ? "not available" : `${stall.queueCount} people`
+	stats.innerHTML =
+	  `Simulated queue: <strong>${queueText}</strong> · ` +
+	  `Est. wait: <strong>${waitText}</strong>`;
+      }
+
 
       const badge = document.createElement("span");
       badge.className = "data-status " + status.cls;

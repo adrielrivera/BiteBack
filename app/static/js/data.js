@@ -60,7 +60,7 @@ const MAX_SNAPSHOT_AGE_MINUTES = 10;
    `fullCalculation` = true only for the one stall this PoC fully models
    -------------------------------------------------------------------------- */
 const STALLS = [
-  { id: "chicken-rice", name: "Chicken Rice", queueCount: 12, queueMinutes: 9, snapshotAgeMinutes: 2, fullCalculation: true },
+  { id: "chicken-rice", name: "Chicken Rice", queueCount: 12, queueMinutes: 9, snapshotAgeMinutes: 0, fullCalculation: true },
   { id: "mothers-rice-bowl", name: "Mother's Rice Bowl", queueCount: 7, queueMinutes: 5, snapshotAgeMinutes: 2, fullCalculation: false },
   { id: "waizhai-vegetarian", name: "Waizhai Vegetarian", queueCount: 4, queueMinutes: 3, snapshotAgeMinutes: 3, fullCalculation: false },
   { id: "baba-remzi", name: "Baba Remzi", queueCount: 10, queueMinutes: 8, snapshotAgeMinutes: 2, fullCalculation: false },
