@@ -331,43 +331,65 @@
     const nowMinutes = getNowMinutes();
     const stall = getStall("chicken-rice");
 
-    const result = evaluateTrip({
-      nowMinutes,
-      lessonMinutes: state.lessonMinutes,
-      stall,
-      timings: TIMINGS,
-      maxSnapshotAgeMinutes: MAX_SNAPSHOT_AGE_MINUTES,
-    });
+    const updateQueueTime = async () => {
+      try {
+	if (
+	    stall.queueMinutes !== null &&
+	    stall.snapshotAgeMinutes <= 25
+	  ) {
+	    const res = await fetch("/api/count");
+	    const data = await res.json();
+	    const count = data.count;
+	    const queueMinutes = Math.ceil(count * 0.75);
+	    stall.queueMinutes = queueMinutes;
+	}
+    
+	const result = evaluateTrip({
+	  nowMinutes,
+	  lessonMinutes: state.lessonMinutes,
+	  stall,
+	  timings: TIMINGS,
+	  maxSnapshotAgeMinutes: MAX_SNAPSHOT_AGE_MINUTES,
+	});
 
-    /* Anything that is not a computed verdict is presented as Unknown, so the
-       screen never shows a blank or a half-finished answer. */
-    const view = PRESENTATION[result.status] || PRESENTATION[RESULT.UNKNOWN];
+	/* Anything that is not a computed verdict is presented as Unknown, so the
+	   screen never shows a blank or a half-finished answer. */
+	const view = PRESENTATION[result.status] || PRESENTATION[RESULT.UNKNOWN];
 
-    const pill = $("status-pill");
-    pill.className = "status-pill " + view.cls;
-    $("status-icon").textContent = view.icon;
-    $("status-label").textContent = view.label;
-    $("status-line").textContent = view.line;
+	const pill = $("status-pill");
+	pill.className = "status-pill " + view.cls;
+	$("status-icon").textContent = view.icon;
+	$("status-label").textContent = view.label;
+	$("status-line").textContent = view.line;
 
-    $("result-context").textContent =
-      `${SCENARIO.startBlock} → ${SCENARIO.foodCourt} → ${SCENARIO.nextLessonBlock} · ` +
-      `now ${minutesToDisplayTime(nowMinutes)} · lesson ${minutesToDisplayTime(state.lessonMinutes)}`;
+	$("result-context").textContent =
+	  `${SCENARIO.startBlock} → ${SCENARIO.foodCourt} → ${SCENARIO.nextLessonBlock} · ` +
+	  `now ${minutesToDisplayTime(nowMinutes)} · lesson ${minutesToDisplayTime(state.lessonMinutes)}`;
 
-    const hasNumbers = result.breakdown !== null && result.breakdown !== undefined;
+	const hasNumbers = result.breakdown !== null && result.breakdown !== undefined;
 
-    setText("eat-before", hasNumbers ? result.eatingBeforeBuffer : "--");
-    setText("eat-after", hasNumbers ? result.eatingAfterBuffer : "--");
-    $("eat-rule").textContent = hasNumbers
-      ? `Rule: at least ${TIMINGS.minEatingMinutes} minutes of eating time after the ${TIMINGS.safetyBufferMinutes} minute safety buffer.`
-      : "No eating time can be calculated without complete queue and timing data.";
+	setText("eat-before", hasNumbers ? result.eatingBeforeBuffer : "--");
+	setText("eat-after", hasNumbers ? result.eatingAfterBuffer : "--");
+	$("eat-rule").textContent = hasNumbers
+	  ? `Rule: at least ${TIMINGS.minEatingMinutes} minutes of eating time after the ${TIMINGS.safetyBufferMinutes} minute safety buffer.`
+	  : "No eating time can be calculated without complete queue and timing data.";
 
-    setText("bd-walk1", hasNumbers ? result.breakdown.walkStartToCourt : "--");
-    setText("bd-queue", hasNumbers ? result.breakdown.queueMinutes : "--");
-    setText("bd-prep", hasNumbers ? result.breakdown.prepMinutes : "--");
-    setText("bd-walk2", hasNumbers ? result.breakdown.walkCourtToLesson : "--");
-    setText("bd-base", hasNumbers ? result.baseNonEatingMinutes : "--");
-    setText("bd-buffer", hasNumbers ? result.breakdown.safetyBufferMinutes : "--");
-    setText("bd-available", hasNumbers ? result.availableMinutes : "--");
+	setText("bd-walk1", hasNumbers ? result.breakdown.walkStartToCourt : "--");
+	setText("bd-queue", hasNumbers ? result.breakdown.queueMinutes : "--");
+	setText("bd-prep", hasNumbers ? result.breakdown.prepMinutes : "--");
+	setText("bd-walk2", hasNumbers ? result.breakdown.walkCourtToLesson : "--");
+	setText("bd-base", hasNumbers ? result.baseNonEatingMinutes : "--");
+	setText("bd-buffer", hasNumbers ? result.breakdown.safetyBufferMinutes : "--");
+	setText("bd-available", hasNumbers ? result.availableMinutes : "--");
+
+      } catch (err) {
+	console.error(err);
+      }
+    }
+    
+    updateQueueTime();
+    setInterval(updateQueueTime, 1000);
+
 
     // $("explain-text").textContent = explain(result);
   }
