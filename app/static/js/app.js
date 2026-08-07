@@ -231,7 +231,7 @@
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "btn btn-primary";
-        btn.textContent = "Check if I have time for Chicken Rice";
+        btn.textContent = "Timing Breakdown";
         btn.addEventListener("click", () => {
           renderResultScreen();
           showScreen("screen-result");
@@ -241,7 +241,7 @@
       } else {
         const note = document.createElement("p");
         note.className = "stall-note";
-        note.textContent = "Queue comparison only. Full timing calculation not available in this prototype.";
+        note.textContent = "Timing Breakdown Unavailable";
         li.append(note);
       }
 
@@ -257,25 +257,25 @@
       cls: "is-feasible",
       icon: "✓",
       label: "Feasible",
-      line: "You should have enough time, including the safety buffer.",
+      line: "Enough time",
     },
     [RESULT.RISKY]: {
       cls: "is-risky",
       icon: "!",
       label: "Risky",
-      line: "It only works if nothing goes wrong. No spare time left.",
+      line: "No spare time",
     },
     [RESULT.NOT_FEASIBLE]: {
       cls: "is-not-feasible",
       icon: "✕",
       label: "Not feasible",
-      line: "There is not enough time to eat properly and still arrive on time.",
+      line: "Not enough time",
     },
     [RESULT.UNKNOWN]: {
       cls: "is-unknown",
       icon: "?",
       label: "Unknown",
-      line: "BiteBack will not guess when the data is missing or out of date.",
+      line: "No data",
     },
   };
 
@@ -370,9 +370,9 @@
 
 	setText("eat-before", hasNumbers ? result.eatingBeforeBuffer : "--");
 	setText("eat-after", hasNumbers ? result.eatingAfterBuffer : "--");
-	$("eat-rule").textContent = hasNumbers
-	  ? `Rule: at least ${TIMINGS.minEatingMinutes} minutes of eating time after the ${TIMINGS.safetyBufferMinutes} minute safety buffer.`
-	  : "No eating time can be calculated without complete queue and timing data.";
+	// $("eat-rule").textContent = hasNumbers
+	//   ? `Rule: at least ${TIMINGS.minEatingMinutes} minutes of eating time after the ${TIMINGS.safetyBufferMinutes} minute safety buffer.`
+	//   : "No eating time can be calculated without complete queue and timing data.";
 
 	setText("bd-walk1", hasNumbers ? result.breakdown.walkStartToCourt : "--");
 	setText("bd-queue", hasNumbers ? result.breakdown.queueMinutes : "--");
